@@ -1,6 +1,7 @@
 import { motion } from "framer-motion";
 import { MessageSquare, Plus, Search, Trash2 } from "lucide-react";
 import type { Conversation } from "@/hooks/useChat";
+import leafLogo from "@/assets/leaf-logo.png";
 
 interface ChatSidebarProps {
   conversations: Conversation[];
@@ -49,40 +50,51 @@ export function ChatSidebar({
       animate={isOpen ? "open" : "closed"}
       className="flex h-full flex-col border-r border-sidebar-border bg-sidebar overflow-hidden"
     >
-      {/* Top actions */}
+      {/* Logo & actions */}
       <div className="flex items-center gap-2 p-3">
+        <div className="flex h-10 w-10 shrink-0 items-center justify-center">
+          <img src={leafLogo} alt="Muse" className="w-7 h-7 object-contain" />
+        </div>
+        {isOpen && (
+          <motion.span
+            variants={itemVariants}
+            className="font-display text-base font-semibold text-sidebar-foreground tracking-tight"
+          >
+            Muse
+          </motion.span>
+        )}
+        <div className="flex-1" />
         <motion.button
           whileHover={{ scale: 1.05 }}
           whileTap={{ scale: 0.95 }}
           onClick={onNewConversation}
-          className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg text-sidebar-foreground hover:bg-sidebar-accent transition-colors"
+          className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg text-sidebar-foreground hover:bg-sidebar-accent transition-colors"
           title="New conversation"
         >
-          <Plus size={20} />
+          <Plus size={18} />
         </motion.button>
-
         {isOpen && (
           <motion.button
             variants={itemVariants}
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
-            className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg text-sidebar-foreground hover:bg-sidebar-accent transition-colors"
+            className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg text-sidebar-foreground hover:bg-sidebar-accent transition-colors"
             title="Search"
           >
-            <Search size={18} />
+            <Search size={16} />
           </motion.button>
         )}
       </div>
 
       {/* Conversation list */}
-      <div className="flex-1 overflow-y-auto chat-scrollbar px-2 pb-4">
+      <div className="flex-1 overflow-y-auto chat-scrollbar px-2 pb-4 mt-1">
         {conversations.map((conv, i) => (
           <motion.div
             key={conv.id}
-            initial={{ opacity: 0, y: 8 }}
+            initial={{ opacity: 0, y: 6 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{
-              type: "spring",
+              type: "spring" as const,
               stiffness: 400,
               damping: 25,
               delay: i * 0.03,
@@ -90,17 +102,17 @@ export function ChatSidebar({
           >
             <button
               onClick={() => onSelectConversation(conv.id)}
-              className={`group relative flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-left text-sm transition-colors ${
+              className={`group relative flex w-full items-center gap-3 rounded-lg px-3 py-2 text-left text-sm transition-colors ${
                 activeConversationId === conv.id
                   ? "bg-sidebar-accent text-sidebar-accent-foreground"
                   : "text-sidebar-foreground hover:bg-sidebar-accent/60"
               }`}
             >
-              <MessageSquare size={16} className="shrink-0 opacity-60" />
+              <MessageSquare size={15} className="shrink-0 opacity-50" />
               {isOpen && (
                 <motion.span
                   variants={itemVariants}
-                  className="truncate font-body text-sm"
+                  className="truncate font-body text-[13px]"
                 >
                   {conv.title}
                 </motion.span>
@@ -114,7 +126,7 @@ export function ChatSidebar({
                     onDeleteConversation(conv.id);
                   }}
                 >
-                  <Trash2 size={14} className="text-muted-foreground hover:text-destructive transition-colors" />
+                  <Trash2 size={13} className="text-muted-foreground hover:text-destructive transition-colors" />
                 </motion.span>
               )}
             </button>
