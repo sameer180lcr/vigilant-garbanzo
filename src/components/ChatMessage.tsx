@@ -1,6 +1,7 @@
 import { motion } from "framer-motion";
 import type { Message } from "@/hooks/useChat";
 import { CodeBlock } from "@/components/CodeBlock";
+import { StreamingWord } from "@/components/StreamingWord";
 import { useMemo } from "react";
 
 interface ChatMessageProps {
@@ -21,12 +22,10 @@ function parseContent(content: string): ContentPart[] {
   let match;
 
   while ((match = codeBlockRegex.exec(content)) !== null) {
-    // Text before code block
     if (match.index > lastIndex) {
       const text = content.slice(lastIndex, match.index).trim();
       if (text) parts.push({ type: "text", content: text });
     }
-    // Code block
     parts.push({
       type: "code",
       language: match[1] || "text",
@@ -35,7 +34,6 @@ function parseContent(content: string): ContentPart[] {
     lastIndex = match.index + match[0].length;
   }
 
-  // Remaining text
   if (lastIndex < content.length) {
     const text = content.slice(lastIndex).trim();
     if (text) parts.push({ type: "text", content: text });
@@ -82,15 +80,12 @@ export function ChatMessage({ message, index }: ChatMessageProps) {
               ) : (
                 <p
                   key={i}
-                  className="font-body text-[15px] leading-relaxed whitespace-pre-wrap"
+                  className="font-body text-[15px] leading-relaxed whitespace-pre-wrap inline"
                 >
-                  {part.content}
-                  {message.isStreaming && i === parts.length - 1 && (
-                    <motion.span
-                      animate={{ opacity: [1, 0] }}
-                      transition={{ duration: 0.5, repeat: Infinity, repeatType: "reverse" }}
-                      className="inline-block w-[2px] h-[1em] bg-foreground ml-0.5 align-text-bottom"
-                    />
+                  {message.isStreaming ? (
+                    <StreamingText text={part.content} isLast={i === parts.length - 1} />
+                  ) : (
+                    part.content
                   )}
                 </p>
               )
@@ -99,5 +94,31 @@ export function ChatMessage({ message, index }: ChatMessageProps) {
         )}
       </div>
     </motion.div>
+  );
+}
+
+function StreamingText({ text, isLast }: { text: string; isLast: boolean }) {
+  const words = text.split(/(\s+)/);
+
+  return (
+    <>
+      {words.map((word, i) => (
+        <StreamingWord key={i} word={word} index={i} />
+      ))}
+      {isLast && (
+        <motion.span
+          animate={{
+            opacity: [1, 0.2, 1],
+            scaleY: [1, 0.8, 1],
+          }}
+          transition={{
+            duration: 0.8,
+            repeat: Infinity,
+            ease: "easeInOut",
+          }}
+          className="inline-block w-[2.5px] h-[1.1em] rounded-full bg-primary ml-0.5 align-text-bottom"
+        />
+      )}
+    </>
   );
 }
