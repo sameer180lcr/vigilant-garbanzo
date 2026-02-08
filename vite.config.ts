@@ -8,6 +8,9 @@ export default defineConfig(({ mode }) => ({
   server: {
     host: "::",
     port: 8080,
+    allowedHosts: [
+      "vigilant-garbanzo-8qat.onrender.com"
+    ],
     hmr: {
       overlay: false,
     },

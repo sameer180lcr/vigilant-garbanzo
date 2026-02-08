@@ -1,6 +1,7 @@
-import { motion } from "framer-motion";
-import { MessageSquare, Plus, Search, Trash2 } from "lucide-react";
-import type { Conversation } from "@/hooks/useChat";
+import { useState, useEffect } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import { MessageSquare, Plus, Search, Trash2, Settings, Moon, Sun } from "lucide-react";
+import type { Conversation, UserSettings } from "@/hooks/useChat";
 import leafLogo from "@/assets/leaf-logo.png";
 
 interface ChatSidebarProps {
@@ -10,6 +11,8 @@ interface ChatSidebarProps {
   onNewConversation: () => void;
   onDeleteConversation: (id: string) => void;
   isOpen: boolean;
+  onOpenSettings: () => void;
+  settings: UserSettings;
 }
 
 const sidebarVariants = {
@@ -43,7 +46,21 @@ export function ChatSidebar({
   onNewConversation,
   onDeleteConversation,
   isOpen,
+  onOpenSettings,
+  settings,
 }: ChatSidebarProps) {
+  const [showSettings, setShowSettings] = useState(false);
+  const [theme, setTheme] = useState<"light" | "dark">("light");
+
+  // Apply theme to document
+  useEffect(() => {
+    if (theme === "dark") {
+      document.documentElement.classList.add("dark");
+    } else {
+      document.documentElement.classList.remove("dark");
+    }
+  }, [theme]);
+
   return (
     <motion.aside
       variants={sidebarVariants}
@@ -53,7 +70,7 @@ export function ChatSidebar({
       {/* Logo & actions */}
       <div className="flex items-center gap-2 p-3">
         <div className="flex h-10 w-10 shrink-0 items-center justify-center">
-          <img src={leafLogo} alt="Muse" className="w-7 h-7 object-contain" />
+          <img src={leafLogo} alt="Muse" className="w-7 h-7 object-contain mix-blend-multiply" />
         </div>
         {isOpen && (
           <motion.span
@@ -102,11 +119,10 @@ export function ChatSidebar({
           >
             <button
               onClick={() => onSelectConversation(conv.id)}
-              className={`group relative flex w-full items-center gap-3 rounded-lg px-3 py-2 text-left text-sm transition-colors ${
-                activeConversationId === conv.id
-                  ? "bg-sidebar-accent text-sidebar-accent-foreground"
-                  : "text-sidebar-foreground hover:bg-sidebar-accent/60"
-              }`}
+              className={`group relative flex w-full items-center gap-3 rounded-lg px-3 py-2 text-left text-sm transition-colors ${activeConversationId === conv.id
+                ? "bg-sidebar-accent text-sidebar-accent-foreground"
+                : "text-sidebar-foreground hover:bg-sidebar-accent/60"
+                }`}
             >
               <MessageSquare size={15} className="shrink-0 opacity-50" />
               {isOpen && (
@@ -132,6 +148,64 @@ export function ChatSidebar({
             </button>
           </motion.div>
         ))}
+      </div>
+
+      {/* Bottom Actions - Settings & Theme */}
+      <div className="p-3 border-t border-sidebar-border relative">
+        <AnimatePresence>
+          {isOpen && showSettings && (
+            <motion.div
+              initial={{ opacity: 0, y: 10, scale: 0.95 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              exit={{ opacity: 0, y: 10, scale: 0.95 }}
+              className="absolute bottom-16 left-3 w-48 rounded-2xl bg-sidebar-accent border border-sidebar-border shadow-xl p-1.5 z-50 overflow-hidden"
+            >
+              <div className="px-3 py-2 text-[10px] font-bold text-muted-foreground uppercase tracking-widest mb-1 opacity-50">
+                Appearance
+              </div>
+              <button
+                onClick={() => setTheme("light")}
+                className={`w-full flex items-center gap-3 px-3 py-2 rounded-xl text-[13px] font-semibold transition-all hover:bg-white/10 ${theme === "light" ? "text-primary" : "text-muted-foreground"}`}
+              >
+                <Sun size={16} />
+                Cream Mode
+                {theme === "light" && <div className="ml-auto w-1.5 h-1.5 rounded-full bg-primary" />}
+              </button>
+              <button
+                onClick={() => setTheme("dark")}
+                className={`w-full flex items-center gap-3 px-3 py-2 rounded-xl text-[13px] font-semibold transition-all hover:bg-white/10 ${theme === "dark" ? "text-primary" : "text-muted-foreground"}`}
+              >
+                <Moon size={16} />
+                Deep Dark
+                {theme === "dark" && <div className="ml-auto w-1.5 h-1.5 rounded-full bg-primary" />}
+              </button>
+            </motion.div>
+          )}
+        </AnimatePresence>
+
+        <div className="flex items-center gap-3">
+          <motion.button
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            onClick={onOpenSettings}
+            className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-xl transition-all ${showSettings ? "bg-sidebar-accent text-primary" : "text-muted-foreground hover:bg-sidebar-accent"}`}
+          >
+            <Settings size={20} className={showSettings ? "rotate-45" : ""} />
+          </motion.button>
+
+          {isOpen && (
+            <motion.div
+              variants={itemVariants}
+              className="flex flex-col min-w-0"
+            >
+              <span className="text-xs font-bold text-sidebar-foreground truncate uppercase tracking-tighter opacity-80">{settings.userName}</span>
+              <div className="flex items-center gap-1">
+                <span className="text-[9px] text-primary font-bold uppercase tracking-widest shrink-0">PRO</span>
+                <span className="text-[9px] text-muted-foreground truncate italic opacity-60">Executive Mode</span>
+              </div>
+            </motion.div>
+          )}
+        </div>
       </div>
     </motion.aside>
   );

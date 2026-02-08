@@ -1,0 +1,9 @@
+services:
+  - type: web
+    name: muse-executive
+    env: static
+    buildCommand: npm run build
+    publishPath: dist
+    envVars:
+      - key: VITE_OLLAMA_API
+        value: http://localhost:11434 # Default, override in Dashboard

@@ -110,7 +110,12 @@
     @apply bg-background text-foreground font-body antialiased;
   }
 
-  h1, h2, h3, h4, h5, h6 {
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
     @apply font-display;
   }
 }
@@ -119,14 +124,23 @@
   .chat-scrollbar::-webkit-scrollbar {
     width: 6px;
   }
+
   .chat-scrollbar::-webkit-scrollbar-track {
     background: transparent;
   }
+
   .chat-scrollbar::-webkit-scrollbar-thumb {
     background: hsl(var(--border));
     border-radius: 3px;
   }
+
   .chat-scrollbar::-webkit-scrollbar-thumb:hover {
     background: hsl(var(--muted-foreground) / 0.4);
+  }
+
+  .glass-blur {
+    background: rgba(var(--background), 0.7);
+    backdrop-filter: blur(12px) saturate(180%);
+    -webkit-backdrop-filter: blur(12px) saturate(180%);
   }
 }

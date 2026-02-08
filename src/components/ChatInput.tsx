@@ -68,11 +68,10 @@ export function ChatInput({ onSend, disabled }: ChatInputProps) {
           whileTap={{ scale: 0.92 }}
           onClick={handleSubmit}
           disabled={!value.trim() || disabled}
-          className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-full transition-all duration-200 mb-0.5 ${
-            value.trim()
-              ? "bg-foreground text-background"
-              : "bg-muted text-muted-foreground"
-          }`}
+          className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-full transition-all duration-200 mb-0.5 ${value.trim()
+            ? "bg-foreground text-background"
+            : "bg-muted text-muted-foreground"
+            }`}
         >
           <ArrowUp size={16} />
         </motion.button>
